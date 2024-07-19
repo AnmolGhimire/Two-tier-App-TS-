@@ -1,0 +1,53 @@
+version: "3"
+services:
+  backend:
+    image: docanmol/two-tier-flaskapp:latest
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DB: mydb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - mysql
+    networks:
+      - compose
+
+
+  mysql:
+    image: mysql:5.7
+    ports:      
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DB: mydb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    networks:
+      - compose
+    volumes:
+      - ./message.sql:/docker-entrypoint-initdb.d/message.sql 
+      - mysql-data:/var/lib/mysql
+
+
+networks:
+  compose:
+    external: true
+
+
+volumes:
+  mysql-data:
+    driver: local       
+
+
+
+
+
+
+
+
